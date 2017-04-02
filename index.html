@@ -1,0 +1,80 @@
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+  <script type="text/javascript" src="https://angular-file-upload.appspot.com/js/ng-file-upload-shim.js"></script>
+  <script type="text/javascript" src="https://angular-file-upload.appspot.com/js/ng-file-upload.js"></script>
+
+
+  <script>
+    //inject angular file upload directives and services.
+    var app = angular.module('fileUpload', ['ngFileUpload']);
+
+    app.controller('MyCtrl', ['$scope', 'Upload', '$timeout', function ($scope, Upload, $timeout) {
+      $scope.uploadFiles = function(file, errFiles) {
+          $scope.f = file;
+          $scope.errFile = errFiles && errFiles[0];
+          if (file) {
+              file.upload = Upload.upload({
+                  url: '/upload',
+                  data: {file: file}
+              });
+
+              file.upload.then(function (response) {
+                  $timeout(function () {
+                      file.result = response.data;
+                  });
+              }, function (response) {
+                  if (response.status > 0)
+                      $scope.errorMsg = response.status + ': ' + response.data;
+              }, function (evt) {
+                  file.progress = Math.min(100, parseInt(100.0 *
+                                           evt.loaded / evt.total));
+              });
+          }
+      }
+    }]);
+  </script>
+
+  <style>
+      .thumb {
+      width: 24px;
+      height: 24px;
+      float: none;
+      position: relative;
+      top: 7px;
+    }
+
+    form .progress {
+      line-height: 15px;
+    }
+
+    .progress {
+      display: inline-block;
+      width: 100px;
+      border: 3px groove #CCC;
+    }
+
+    .progress div {
+      font-size: smaller;
+      background: orange;
+      width: 0;
+    }
+  </style>
+</head>
+
+<body ng-app="fileUpload" ng-controller="MyCtrl">
+  <h4>Upload on file select</h4>
+  <button type="file" ngf-select="uploadFiles($file, $invalidFiles)"
+          accept="image/*" >
+      Select File</button>
+  <br><br>
+
+  <!-- ngf-max-height="1000"  ngf-max-size="1MB" -->
+  File:
+  <div style="font:smaller">{{f.name}} {{errFile.name}} {{errFile.$error}} {{errFile.$errorParam}}
+      <span class="progress" ng-show="f.progress >= 0">
+          <div style="width:{{f.progress}}%"
+               ng-bind="f.progress + '%'"></div>
+      </span>
+  </div>
+  {{errorMsg}}
+</body>
