@@ -24,4 +24,13 @@ npm install
 bower install
 ```
 
+#### Notes
+* Currently accepts images by default but can be changed:
+``` accept="image/*" ```
+
+* The upload file size can be restricted:
+``` ngf-max-size="1MB" ```
+* The height of the uploaded file can also be restricted:
+``` ngf-max-height="1000" ```
+
 ####  For any querires, send your requests to tanay.mit@gmail.com
